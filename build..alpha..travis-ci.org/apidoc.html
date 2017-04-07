@@ -1,0 +1,463 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/npm/lockfile#readme"
+
+    >lockfile (v1.0.3)</a>
+</h1>
+<h4>A very polite lock file utility, which endeavors to not litter, and to wait patiently for others.</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.lockfile">module lockfile</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.lockfile.check">
+            function <span class="apidocSignatureSpan">lockfile.</span>check
+            <span class="apidocSignatureSpan">(path, opts, cb)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.lockfile.checkSync">
+            function <span class="apidocSignatureSpan">lockfile.</span>checkSync
+            <span class="apidocSignatureSpan">(path, opts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.lockfile.lock">
+            function <span class="apidocSignatureSpan">lockfile.</span>lock
+            <span class="apidocSignatureSpan">(path, opts, cb)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.lockfile.lockSync">
+            function <span class="apidocSignatureSpan">lockfile.</span>lockSync
+            <span class="apidocSignatureSpan">(path, opts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.lockfile.unlock">
+            function <span class="apidocSignatureSpan">lockfile.</span>unlock
+            <span class="apidocSignatureSpan">(path, cb)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.lockfile.unlockSync">
+            function <span class="apidocSignatureSpan">lockfile.</span>unlockSync
+            <span class="apidocSignatureSpan">(path)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">string <span class="apidocSignatureSpan">lockfile.</span>filetime</span>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.lockfile" id="apidoc.module.lockfile">module lockfile</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.lockfile.check" id="apidoc.element.lockfile.check">
+        function <span class="apidocSignatureSpan">lockfile.</span>check
+        <span class="apidocSignatureSpan">(path, opts, cb)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">check = function (path, opts, cb) {
+  if (typeof opts === &#x27;function&#x27;) cb = opts, opts = {}
+  debug(&#x27;check&#x27;, path, opts)
+  fs.open(path, &#x27;r&#x27;, function (er, fd) {
+    if (er) {
+      if (er.code !== &#x27;ENOENT&#x27;) return cb(er)
+      return cb(null, false)
+    }
+
+    if (!opts.stale) {
+      return fs.close(fd, function (er) {
+        return cb(er, true)
+      })
+    }
+
+    fs.fstat(fd, function (er, st) {
+      if (er) return fs.close(fd, function (er2) {
+        return cb(er)
+      })
+
+      fs.close(fd, function (er) {
+        var age = Date.now() - st[exports.filetime].getTime()
+        return cb(er, age &#x3c;= opts.stale)
+      })
+    })
+  })
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+Close and unlink the lockfile.
+
+### lockFile.unlockSync(path)
+
+Close and unlink the lockfile.
+
+### lockFile.<span class="apidocCodeKeywordSpan">check</span>(path, [opts], cb)
+
+Check if the lockfile is locked and not stale.
+
+Callback is called with `cb(error, isLocked)`.
+
+### lockFile.checkSync(path, [opts])
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.lockfile.checkSync" id="apidoc.element.lockfile.checkSync">
+        function <span class="apidocSignatureSpan">lockfile.</span>checkSync
+        <span class="apidocSignatureSpan">(path, opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">checkSync = function (path, opts) {
+  opts = opts || {}
+  debug(&#x27;checkSync&#x27;, path, opts)
+  if (opts.wait) {
+    throw new Error(&#x27;opts.wait not supported sync for obvious reasons&#x27;)
+  }
+
+  try {
+    var fd = fs.openSync(path, &#x27;r&#x27;)
+  } catch (er) {
+    if (er.code !== &#x27;ENOENT&#x27;) throw er
+    return false
+  }
+
+  if (!opts.stale) {
+    try { fs.closeSync(fd) } catch (er) {}
+    return true
+  }
+
+  // file exists.  however, might be stale
+  if (opts.stale) {
+    try {
+      var st = fs.fstatSync(fd)
+    } finally {
+      fs.closeSync(fd)
+    }
+    var age = Date.now() - st[exports.filetime].getTime()
+    return (age &#x3c;= opts.stale)
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+### lockFile.check(path, [opts], cb)
+
+Check if the lockfile is locked and not stale.
+
+Callback is called with `cb(error, isLocked)`.
+
+### lockFile.<span class="apidocCodeKeywordSpan">checkSync</span>(path, [opts])
+
+Check if the lockfile is locked and not stale.
+
+Returns boolean.
+
+## Options
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.lockfile.lock" id="apidoc.element.lockfile.lock">
+        function <span class="apidocSignatureSpan">lockfile.</span>lock
+        <span class="apidocSignatureSpan">(path, opts, cb)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">lock = function (path, opts, cb) {
+  if (typeof opts === &#x27;function&#x27;) cb = opts, opts = {}
+  opts.req = opts.req || req++
+  debug(&#x27;lock&#x27;, path, opts)
+  opts.start = opts.start || Date.now()
+
+  if (typeof opts.retries === &#x27;number&#x27; &#x26;&#x26; opts.retries &#x3e; 0) {
+    debug(&#x27;has retries&#x27;, opts.retries)
+    var retries = opts.retries
+    opts.retries = 0
+    cb = (function (orig) { return function cb (er, fd) {
+      debug(&#x27;retry-mutated callback&#x27;)
+      retries -= 1
+      if (!er || retries &#x3c; 0) return orig(er, fd)
+
+      debug(&#x27;lock retry&#x27;, path, opts)
+
+      if (opts.retryWait) setTimeout(retry, opts.retryWait)
+      else retry()
+
+      function retry () {
+        opts.start = Date.now()
+        debug(&#x27;retrying&#x27;, opts.start)
+        exports.lock(path, opts, cb)
+      }
+    }})(cb)
+  }
+
+  // try to engage the lock.
+  // if this succeeds, then we&#x27;re in business.
+  fs.open(path, wx, function (er, fd) {
+    if (!er) {
+      debug(&#x27;locked&#x27;, path, fd)
+      locks[path] = fd
+      return fs.close(fd, function () {
+        return cb()
+      })
+    }
+
+    // something other than &#x22;currently locked&#x22;
+    // maybe eperm or something.
+    if (er.code !== &#x27;EEXIST&#x27;) return cb(er)
+
+    // someone&#x27;s got this one.  see if it&#x27;s valid.
+    if (!opts.stale) return notStale(er, path, opts, cb)
+
+    return maybeStale(er, path, opts, false, cb)
+  })
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+## Usage
+
+```javascript
+var lockFile = require(&#x27;lockfile&#x27;)
+
+// opts is optional, and defaults to {}
+lockFile.<span class="apidocCodeKeywordSpan">lock</span>(&#x27;some-file.lock&#x27;, opts, function (er) {
+// if the er happens, then it failed to acquire a lock.
+// if there was not an error, then the file was created,
+// and won&#x27;t be deleted until we unlock it.
+
+// do my stuff, free of interruptions
+// then, some time later, do:
+lockFile.unlock(&#x27;some-file.lock&#x27;, function (er) {
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.lockfile.lockSync" id="apidoc.element.lockfile.lockSync">
+        function <span class="apidocSignatureSpan">lockfile.</span>lockSync
+        <span class="apidocSignatureSpan">(path, opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">lockSync = function (path, opts) {
+  opts = opts || {}
+  opts.req = opts.req || req++
+  debug(&#x27;lockSync&#x27;, path, opts)
+  if (opts.wait || opts.retryWait) {
+    throw new Error(&#x27;opts.wait not supported sync for obvious reasons&#x27;)
+  }
+
+  try {
+    var fd = fs.openSync(path, wx)
+    locks[path] = fd
+    try { fs.closeSync(fd) } catch (er) {}
+    debug(&#x27;locked sync!&#x27;, path, fd)
+    return
+  } catch (er) {
+    if (er.code !== &#x27;EEXIST&#x27;) return retryThrow(path, opts, er)
+
+    if (opts.stale) {
+      var st = fs.statSync(path)
+      var ct = st[exports.filetime].getTime()
+      if (!(ct % 1000) &#x26;&#x26; (opts.stale % 1000)) {
+        // probably don&#x27;t have subsecond resolution.
+        // round up the staleness indicator.
+        // Yes, this will be wrong 1/1000 times on platforms
+        // with subsecond stat precision, but that&#x27;s acceptable
+        // in exchange for not mistakenly removing locks on
+        // most other systems.
+        opts.stale = 1000 * Math.ceil(opts.stale / 1000)
+      }
+      var age = Date.now() - ct
+      if (age &#x3e; opts.stale) {
+        debug(&#x27;lockSync stale&#x27;, path, opts, age)
+        exports.unlockSync(path)
+        return exports.lockSync(path, opts)
+      }
+    }
+
+    // failed to lock!
+    debug(&#x27;failed to lock&#x27;, path, opts, er)
+    return retryThrow(path, opts, er)
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+possible for certain types of failures to cause this to fail, but a best
+effort is made to not be a litterbug.
+
+### lockFile.lock(path, [opts], cb)
+
+Acquire a file lock on the specified path
+
+### lockFile.<span class="apidocCodeKeywordSpan">lockSync</span>(path, [opts])
+
+Acquire a file lock on the specified path
+
+### lockFile.unlock(path, cb)
+
+Close and unlink the lockfile.
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.lockfile.unlock" id="apidoc.element.lockfile.unlock">
+        function <span class="apidocSignatureSpan">lockfile.</span>unlock
+        <span class="apidocSignatureSpan">(path, cb)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">unlock = function (path, cb) {
+  debug(&#x27;unlock&#x27;, path)
+  // best-effort.  unlocking an already-unlocked lock is a noop
+  delete locks[path]
+  fs.unlink(path, function (unlinkEr) { cb &#x26;&#x26; cb() })
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+lockFile.lock(&#x27;some-file.lock&#x27;, opts, function (er) {
+  // if the er happens, then it failed to acquire a lock.
+  // if there was not an error, then the file was created,
+  // and won&#x27;t be deleted until we unlock it.
+
+  // do my stuff, free of interruptions
+  // then, some time later, do:
+  lockFile.<span class="apidocCodeKeywordSpan">unlock</span>(&#x27;some-file.lock&#x27;, function (er) {
+    // er means that an error happened, and is probably bad.
+  })
+})
+```
+
+## Methods
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.lockfile.unlockSync" id="apidoc.element.lockfile.unlockSync">
+        function <span class="apidocSignatureSpan">lockfile.</span>unlockSync
+        <span class="apidocSignatureSpan">(path)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">unlockSync = function (path) {
+  debug(&#x27;unlockSync&#x27;, path)
+  // best-effort.  unlocking an already-unlocked lock is a noop
+  try { fs.unlinkSync(path) } catch (er) {}
+  delete locks[path]
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+Acquire a file lock on the specified path
+
+### lockFile.unlock(path, cb)
+
+Close and unlink the lockfile.
+
+### lockFile.<span class="apidocCodeKeywordSpan">unlockSync</span>(path)
+
+Close and unlink the lockfile.
+
+### lockFile.check(path, [opts], cb)
+
+Check if the lockfile is locked and not stale.
+...</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
