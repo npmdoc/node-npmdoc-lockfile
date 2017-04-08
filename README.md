@@ -3,7 +3,7 @@
 
 [![NPM](https://nodei.co/npm/lockfile.png?downloads=true)](https://www.npmjs.com/package/lockfile)
 
-[![apidoc](https://npmdoc.github.io/node-npmdoc-lockfile/build/screenCapture.buildNpmdoc.browser.%252Fhome%252Ftravis%252Fbuild%252Fnpmdoc%252Fnode-npmdoc-lockfile%252Ftmp%252Fbuild%252Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-lockfile/build/apidoc.html)
+[![apidoc](https://npmdoc.github.io/node-npmdoc-lockfile/build/screenCapture.buildApidoc.browser.%252Fhome%252Ftravis%252Fbuild%252Fnpmdoc%252Fnode-npmdoc-lockfile%252Ftmp%252Fbuild%252Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-lockfile/build/apidoc.html)
 
 ![npmPackageListing](https://npmdoc.github.io/node-npmdoc-lockfile/build/screenCapture.npmPackageListing.svg)
 
